@@ -1,3 +1,9 @@
+library(ggplot2)
+load("ozone.RData")
+data(ozone)
+ozone
+# Part 1  LOESS/LOWESS Regression
+
 # Note span and degree are shown with their default values.
 # degree should be 1 or 2 only
 # span can be any value in (0, 1) non-inclusive.
@@ -16,9 +22,15 @@
 # Make sure you can access the objects properly using the $ notation.
 
 myloess <- function(x, y, span = 0.5, degree = 1, show.plot = TRUE){
- if (x < 1) {
-   #
- }
+  N_total <- length(x)
+  n_points <- N_total*span
+  Win_total <- N_total/n_points
+  if (abs(x) <= 1) {
+    y = (1 - abs(x)^3)^3
+  }
+  else
+    y = 0
+  return()
 }
 
 
