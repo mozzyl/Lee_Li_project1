@@ -20,3 +20,42 @@ myloess <- function(x, y, span = 0.5, degree = 1, show.plot = TRUE){
    #
  }
 }
+
+
+
+# Part 2 kNN function
+
+# Your function will have the following inputs similar to what you would find with the
+# knn() function
+
+# train - matrix or data frame of training set cases
+# test - matrix or data frame of test set cases.
+# A vector will be interpreted as a row vector for a single case.
+# cl - factor of true classification of training set
+# k - number of neighbors considered, the default value is 3
+
+# Lecture 16 pg 78
+# install.packages('caret')
+library(caret)
+
+mykNN <- function(train, test, cl, k = 3) {
+  # Your code goes here
+  
+  # In-Sample Confusion Matrix
+  # Lecture 16, pg 78
+  pihat_train <- predict(modfit_best, newdata = Default_train, type = "response")
+  threshold <- 0.5
+  predicted_category <- factor(ifelse(pihat_train > threshold, "Yes","No"))
+  confusionMatrix <- confusionMatrix(data = predicted_category, reference = (Default_train$default))
+  
+  
+  return (confusionMatrix)
+  #return(list of objects seen below)
+}
+
+# You will return the following
+# A categorical vector for the predicted categories for the testing data
+# The accuracy of the classification
+# The error rate = 1 - accuracy
+# A confusion matrix
+# The value of k used
