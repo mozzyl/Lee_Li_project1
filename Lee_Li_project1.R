@@ -2,7 +2,8 @@ library(ggplot2)
 load("ozone.RData")
 data(ozone)
 ozone
-# Part 1  LOESS/LOWESS Regression
+
+# Part 1 LOESS/LOWESS Regression
 
 # Note span and degree are shown with their default values.
 # degree should be 1 or 2 only
@@ -22,20 +23,67 @@ ozone
 # Make sure you can access the objects properly using the $ notation.
 
 myloess <- function(x, y, span = 0.5, degree = 1, show.plot = TRUE){
-  N_total <- length(x)
+  # x = x$ozone
+  # y = y$ozone
+  
+  # N_total <- length(x)
+  
+  # total number of points in dataset
+  N_total <- nrow(x)*ncol(x)
+  
+  # number of points in each window
   n_points <- N_total*span
+  
+  # total number of windows
   Win_total <- N_total/n_points
+  
+  # Tukey tri-cube weight function
   if (abs(x) <= 1) {
     y = (1 - abs(x)^3)^3
-  }
-  else
+  } else if (abs(x) > 1){
     y = 0
-  return()
+  }
+  
+  # Error Sum of Squares (Tells us how good of a fit we had).
+  fitNFLAnova <- anova(fitNFL)
+  fitNFLAnova
+  SSE <- 
+
+  # An object containing the ggplot so that we can see the plot later
+  loessplot
+    
+    
+    
+  # if (abs(x) <= 1) {
+  #   y = (1 - abs(x)^3)^3
+  # }
+  # else
+  #   y = 0
+  
+  
+  
+  return(span, degree, N_total, Win_total, n_points, SSE, loessplot)
 }
+
+
+# STEPS OF LOESS fit/function
+# 1. determine the distance from each point to the point of estimation
+# 2. scale the distances by the maximum distance over all points in the local data set, and
+# 3. compute the weights by evaluating the tricube weight function using the scaled distances.
+
 
 
 
 # Part 2 kNN function
+
+# Algorithm
+
+#1. Calculate the distance between each training data point and the data point we're examining.
+
+#2. Identify the first k data points with the smallest distance to our data point of interest.
+
+#3. Find the label which occurs the most out of our k closest training data points (aka majority label). This is the label that you will assign to this observation.
+
 
 # Your function will have the following inputs similar to what you would find with the
 # knn() function

@@ -1,0 +1,174 @@
+---
+title: "Project 1"
+subtitle: "CMDA 4654"
+author: "Charles Lee, Andrew Li"
+date: "11/10/20"
+output:
+  pdf_document:
+    highlight: haddock
+keep_tex: no
+number_sections: no
+html_document:
+  df_print: paged
+geometry: margin = 0.5in
+header-includes:
+- \usepackage{booktabs}
+- \usepackage{longtable}
+- \usepackage{array}
+- \usepackage{multirow}
+- \usepackage{wrapfig}
+- \usepackage{float}
+- \usepackage{colortbl}
+- \usepackage{pdflscape}
+- \usepackage{tabu}
+- \usepackage{threeparttable}
+- \usepackage{threeparttablex}
+- \usepackage[normalem]{ulem}
+- \usepackage{makecell}
+- \usepackage{xcolor}
+editor_options:
+  chunk_output_type: console
+documentclass: article
+urlcolor: blue
+---
+<!-- The above is set to automatically compile to a .pdf file.   -->
+
+
+```{r setup, include=FALSE}
+# This is the setup chunk
+#  Here you can set global options for the entire document
+
+library(knitr) # I recommend doing this here
+
+# Although you can call functions from a library using the following notation
+#  without loading the entire library.
+knitr::opts_chunk$set(echo = TRUE, 
+                      comment = NA, # Required
+                      fig.path = "./figures/",  # Store all figures here in relative path (make the folder first)
+                      fig.align = "center",
+                      fig.width = 5, # change the size of figures
+                      fig.height = 5,
+                      message = FALSE, # Turn off load messages
+                      warning = FALSE # Turn off warnings
+                      )
+```
+
+\clearpage
+
+```{r include=FALSE}
+
+# You should set your working directory at the very beginning of your R Markdown file
+
+setwd("C:/CMDA 4654/Project1")
+
+```
+
+
+<!-- ---------------------------------------------------------------------------------------------------- -->
+<!-- ---------------- Project 1 Problems start below these lines ----------------------------------------- -->
+<!-- ---------------------------------------------------------------------------------------------------- -->
+
+# Part 1 - LOESS/LOWESS Regression
+
+```{r}
+library(ggplot2)
+load("data/ozone.RData")
+data("ozone")
+ggplot(ozone, aes(x = temperature, y = ozone)) + theme_bw() + geom_point()
+```
+
+## Problem 1
+First consider the ozone dataset, see Canvas for the ozone.RData file.
+
+1. Fit polynomials of different degrees between 1 and 6 with ozone being regressed upon temperature. Which polynomial fit appears to work the best?
+```{r}
+
+```
+
+2. Use your function to determine LOESS regression fits on the data. Use span = 0.25 to 0.75 with steps of 0.05. Do this for both degree = 1 and degree = 2. List all of the results in a table. Plot the three “best” degree = 1 and three “best” degree = 2 fits that you determined, make sure to put the appropriate span in the title for each plot (there should be a total of 6 plots). You determined the “best” by comparing the residual standard errors. However if you visually inspect the best compared to the 2nd and 3rd best fits, do you feel that you may have over-fit the data?
+```{r}
+
+```
+
+3. Be sure to compare your results with that found from the built-in loess() function and your plots with that which is obtained from ggplot() + geom_smooth()/stat_smooth().
+```{r}
+
+```
+
+
+
+## Problem 2 
+Consider the mcycle dataset from the MASS library package.
+```{r}
+library(MASS)
+data("mcycle")
+ggplot(mcycle, aes(x = times, y = accel)) + theme_bw() + geom_point()
+```
+
+1. This dataset is notoriously difficult to fit with polynomial regression. Later we will study how to use regression trees to fit this data. Until then, determine the three “best” degree = 1 and three “best” degree = 2 LOESS regression fits by finding the best span between 0.25 and 0.75 with steps of 0.05 for each degree. Report your answers in a table. Plot the three best first for both degree = 1 and degree = 2. Based upon a visual inspection, which models provide the “best” fit?
+```{r}
+
+```
+
+2. Be sure to compare your results with that found from the built-in loess() function and your plots with that which is obtained from ggplot() + geom_smooth()/stat_smooth().
+```{r}
+
+```
+
+
+
+
+# Part 2 k-Nearest Neighbors for Classification
+
+Using your Function
+
+Use your function on the Auto dataset from the ISLR library. You can read about the variables using help("Auto")
+```{r}
+# Some pre-processing
+#install.packages('ISLR')
+library(ISLR)
+# Remove the name of the car model and change the origin to categorical with actual name
+Auto_new <- Auto[, -9]
+# Lookup table
+newOrigin <- c("USA", "European", "Japanese")
+Auto_new$origin <- factor(newOrigin[Auto_new$origin], newOrigin)
+# Look at the first 6 observations to see the final version
+head(Auto_new)
+```
+
+1. Randomly split your data into two data frames. Use 70% of your data for the training data and 30% for the testing data.
+```{r}
+##Generate a random number that is 70% of the total number of rows in dataset.
+ran70 <- sample(1:nrow(Auto_new), 0.7 * nrow(Auto_new)) 
+
+##training dataset extracted
+#Auto_train <- Auto_nor[ran70,]
+
+##Generate a random number that is 30% of the total number of rows in dataset.
+ran30 <- sample(1:nrow(Auto_new), 0.3 * nrow(Auto_new)) 
+
+##test dataset extracted
+#Auto_test <- Auto_nor[ran30,]
+```
+
+2. Use your mykNN() function with your training and testing data for several values of k and record your accuracy.
+```{r}
+
+```
+
+3. Make a table of the accuracy for different values of k. Display this table nicely using a table maker like kable().
+```{r}
+
+```
+
+4. Make a plot of the accuracy versus k to determine the best number of neighbors to use.
+```{r}
+
+```
+
+5. Show the final confusion matrix for the best value of k and make sure the accuracy is stated.
+```{r}
+
+```
+
+
