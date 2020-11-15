@@ -37,6 +37,19 @@ myloess <- function(x, y, span = 0.5, degree = 1, show.plot = TRUE){
   # total number of windows
   Win_total <- N_total/n_points
   
+  # So, we know that x and y are just two different columns of the dataset
+  # If we look at one of the links, there is an example with loess using a data set with x and y
+  # The steps they use for the LOESS function is below
+  # I think we have to use Step 1 and 2 to change x into u (on the instruction pdf) which will be used
+  # in the Tukey tri-cube weight function below?
+  # I'm not sure, it's what I got from reading the external links references from the instructions.
+  
+  # STEPS OF LOESS fit/function
+  # 1. determine the distance from each point to the point of estimation
+  # 2. scale the distances by the maximum distance over all points in the local data set, and
+  # 3. compute the weights by evaluating the tricube weight function using the scaled distances.
+  
+  
   # Tukey tri-cube weight function
   if (abs(x) <= 1) {
     y = (1 - abs(x)^3)^3
@@ -45,12 +58,10 @@ myloess <- function(x, y, span = 0.5, degree = 1, show.plot = TRUE){
   }
   
   # Error Sum of Squares (Tells us how good of a fit we had).
-  fitNFLAnova <- anova(fitNFL)
-  fitNFLAnova
-  SSE <- 
+  sse <- sum((fitted(lm(y ~ x)) - mean(y))^2)
 
   # An object containing the ggplot so that we can see the plot later
-  loessplot
+  loessplot <- ggplot
     
     
     
@@ -99,15 +110,28 @@ myloess <- function(x, y, span = 0.5, degree = 1, show.plot = TRUE){
 library(caret)
 
 mykNN <- function(train, test, cl, k = 3) {
-  # Your code goes here
+
   
   # In-Sample Confusion Matrix
   # Lecture 16, pg 78
   pihat_train <- predict(modfit_best, newdata = Default_train, type = "response")
-  threshold <- 0.5
-  predicted_category <- factor(ifelse(pihat_train > threshold, "Yes","No"))
-  confusionMatrix <- confusionMatrix(data = predicted_category, reference = (Default_train$default))
+  threshold <- 0.5 # We pick the threshold 0.5 = 50%
+  predicted_cat_test <- factor( ifelse(pihat_test > threshold,
+                                       "Yes",  # Success
+                                       "No") ) # Failure
+  # Lecture 16 video 4, 1st slide
+  # We can make a table (acutal, predicted categories)
   
+  
+  # Make sure the levels of pred matches the levels of Default$default
+  # or else you need to relevel
+
+  # Average Misclassification Rate/ error rate
+  err <- mean((as.numeric(Default_train$default)-1) != (pihat_train > 0.5))
+  # outputs a decimal number ex. 0.028
+  
+  # accuracy
+  accuracy <- 1 - err
   
   return (confusionMatrix)
   #return(list of objects seen below)
@@ -119,3 +143,16 @@ mykNN <- function(train, test, cl, k = 3) {
 # The error rate = 1 - accuracy
 # A confusion matrix
 # The value of k used
+
+
+
+
+# REFERENCES:
+# https://rinterested.github.io/statistics/rsquare.html
+
+
+
+
+
+
+
