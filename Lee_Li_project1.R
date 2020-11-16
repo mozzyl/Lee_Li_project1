@@ -26,10 +26,10 @@ myloess <- function(x, y, span = 0.5, degree = 1, show.plot = TRUE){
   # x = x$ozone
   # y = y$ozone
   
-  # N_total <- length(x)
   
   # total number of points in dataset
-  N_total <- nrow(x)*ncol(x)
+  N_total <- length(x)
+  #N_total <- nrow(x)*ncol(x)
   
   # number of points in each window
   n_points <- N_total*span
