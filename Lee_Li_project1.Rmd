@@ -72,8 +72,8 @@ setwd("C:/CMDA 4654/Project1")
 
 ```{r}
 library(ggplot2)
-load("data/ozone.RData")
-data("ozone")
+load("ozone.RData")
+#data("ozone")
 ggplot(ozone, aes(x = temperature, y = ozone)) + theme_bw() + geom_point()
 ```
 
@@ -92,9 +92,74 @@ First consider the ozone dataset, see Canvas for the ozone.RData file.
 
 3. Be sure to compare your results with that found from the built-in loess() function and your plots with that which is obtained from ggplot() + geom_smooth()/stat_smooth().
 ```{r}
+# Degree 1
+L1 <- loess(ozone ~ temperature, data=ozone, span = 0.25, degree = 1)
+L2 <- loess(ozone ~ temperature, data=ozone, span = 0.30, degree = 1)
+L3 <- loess(ozone ~ temperature, data=ozone, span = 0.35, degree = 1)
+L4 <- loess(ozone ~ temperature, data=ozone, span = 0.40, degree = 1)
+L5 <- loess(ozone ~ temperature, data=ozone, span = 0.45, degree = 1)
+L6 <- loess(ozone ~ temperature, data=ozone, span = 0.50, degree = 1)
+L7 <- loess(ozone ~ temperature, data=ozone, span = 0.55, degree = 1)
+L8 <- loess(ozone ~ temperature, data=ozone, span = 0.60, degree = 1)
+L9 <- loess(ozone ~ temperature, data=ozone, span = 0.65, degree = 1)
+L10 <- loess(ozone ~ temperature, data=ozone, span = 0.70, degree = 1)
+L11 <- loess(ozone ~ temperature, data=ozone, span = 0.75, degree = 1)
 
+# Table of Residual Standard Errors when degree=1
+d1 <- matrix(c(L1$s,L2$s,L3$s,L4$s,L5$s,L6$s,L7$s,L8$s,L9$s,L10$s,L11$s), ncol = 11, byrow=TRUE)
+colnames(d1) <- c("Span=0.25","Span=0.30","Span=0.35","Span=0.40","Span=0.45","Span=0.50","Span=0.55","Span=0.60","Span=0.65","Span=0.70","Span=0.75")
+rownames(d1) <- c("Residual Standard Error")
+d1
+
+# Predict Loess of 3 "best" ones
+# get smooted output
+smoothed65 <- predict(L9) 
+smoothed70 <- predict(L10) 
+smoothed75 <- predict(L11) 
+
+# Plot
+plot(ozone$ozone, x=ozone$temperature, type="l", main="Loess Smoothing and Prediction", xlab="Temperature", ylab="Ozone (Median)")
+lines(smoothed65, x=ozone$temperature, col="red")
+lines(smoothed70, x=ozone$temperature, col="green")
+lines(smoothed75, x=ozone$temperature, col="blue")
 ```
+The graph is more accurate when the Residual Standard Error is lower. Looking at the table d1, we see that the Residual Standard Error decreases as span increases which makes sense since increasing the span is the smoothing parameter, and the larger the smoothing parameter is, the more accurate the graph becomes. Therefore the last 3 loess variables (L9,L10,L11) with the largest spans are the "best".
 
+
+
+```{r}
+# Degree 2
+L11 <- loess(ozone ~ temperature, data=ozone, span = 0.25, degree = 2)
+L22 <- loess(ozone ~ temperature, data=ozone, span = 0.30, degree = 2)
+L33 <- loess(ozone ~ temperature, data=ozone, span = 0.35, degree = 2)
+L44 <- loess(ozone ~ temperature, data=ozone, span = 0.40, degree = 2)
+L55 <- loess(ozone ~ temperature, data=ozone, span = 0.45, degree = 2)
+L66 <- loess(ozone ~ temperature, data=ozone, span = 0.50, degree = 2)
+L77 <- loess(ozone ~ temperature, data=ozone, span = 0.55, degree = 2)
+L88 <- loess(ozone ~ temperature, data=ozone, span = 0.60, degree = 2)
+L99 <- loess(ozone ~ temperature, data=ozone, span = 0.65, degree = 2)
+L1010 <- loess(ozone ~ temperature, data=ozone, span = 0.70, degree = 2)
+L1111 <- loess(ozone ~ temperature, data=ozone, span = 0.75, degree = 2)
+
+# Table of Residual Standard Errors when degree=2
+d2 <- matrix(c(L11$s,L22$s,L33$s,L44$s,L55$s,L66$s,L77$s,L88$s,L99$s,L1010$s,L1111$s), ncol = 11, byrow=TRUE)
+colnames(d2) <- c("Span=0.25","Span=0.30","Span=0.35","Span=0.40","Span=0.45","Span=0.50","Span=0.55","Span=0.60","Span=0.65","Span=0.70","Span=0.75")
+rownames(d2) <- c("Residual Standard Error")
+d2
+
+# Predict Loess of 3 "best" ones
+# get smooted output
+smoothed25 <- predict(L11) 
+smoothed30 <- predict(L22) 
+smoothed35 <- predict(L33) 
+
+# Plot
+plot(ozone$ozone, x=ozone$temperature, type="l", main="Loess Smoothing and Prediction", xlab="Temperature", ylab="Ozone (Median)")
+lines(smoothed25, x=ozone$temperature, col="red")
+lines(smoothed30, x=ozone$temperature, col="green")
+lines(smoothed35, x=ozone$temperature, col="blue")
+```
+Here, there the three "best" are the first 3 (L11,L22,L33) which is the oposite from degree=1. 
 
 
 ## Problem 2 
@@ -112,8 +177,74 @@ ggplot(mcycle, aes(x = times, y = accel)) + theme_bw() + geom_point()
 
 2. Be sure to compare your results with that found from the built-in loess() function and your plots with that which is obtained from ggplot() + geom_smooth()/stat_smooth().
 ```{r}
+# Degree 1
+Lo1 <- loess(accel ~ times, data=mcycle, span = 0.25, degree = 1)
+Lo2 <- loess(accel ~ times, data=mcycle, span = 0.30, degree = 1)
+Lo3 <- loess(accel ~ times, data=mcycle, span = 0.35, degree = 1)
+Lo4 <- loess(accel ~ times, data=mcycle, span = 0.40, degree = 1)
+Lo5 <- loess(accel ~ times, data=mcycle, span = 0.45, degree = 1)
+Lo6 <- loess(accel ~ times, data=mcycle, span = 0.50, degree = 1)
+Lo7 <- loess(accel ~ times, data=mcycle, span = 0.55, degree = 1)
+Lo8 <- loess(accel ~ times, data=mcycle, span = 0.60, degree = 1)
+Lo9 <- loess(accel ~ times, data=mcycle, span = 0.65, degree = 1)
+Lo10 <- loess(accel ~ times, data=mcycle, span = 0.70, degree = 1)
+Lo11 <- loess(accel ~ times, data=mcycle, span = 0.75, degree = 1)
 
+# Table of Residual Standard Errors when degree=1
+de1 <- matrix(c(Lo1$s,Lo2$s,Lo3$s,Lo4$s,Lo5$s,Lo6$s,Lo7$s,Lo8$s,Lo9$s,Lo10$s,Lo11$s), ncol = 11, byrow=TRUE)
+colnames(d1) <- c("Span=0.25","Span=0.30","Span=0.35","Span=0.40","Span=0.45","Span=0.50","Span=0.55","Span=0.60","Span=0.65","Span=0.70","Span=0.75")
+rownames(d1) <- c("Residual Standard Error")
+de1
+
+# Predict Loess of 3 "best" ones
+# get smooted output
+smoothedd25 <- predict(Lo1) 
+smoothedd30 <- predict(Lo2) 
+smoothedd35 <- predict(Lo3) 
+
+# Plot
+plot(mcycle$accel, x=mcycle$times, type="l", main="Loess Smoothing and Prediction", xlab="Times", ylab="Accel (Median)")
+lines(smoothedd25, x=mcycle$times, col="red")
+lines(smoothedd30, x=mcycle$times, col="green")
+lines(smoothedd35, x=mcycle$times, col="blue")
 ```
+The graph is more accurate when the Residual Standard Error is lower. Looking at the table de1, we see that the Residual Standard Error increases as span increases. Therefore the first 3 loess variables (Lo1,Lo2,Lo3) with the largest spans are the "best".
+
+```{r}
+# Degree 2
+Lo11 <- loess(accel ~ times, data=mcycle, span = 0.25, degree = 2)
+Lo22 <- loess(accel ~ times, data=mcycle, span = 0.30, degree = 2)
+Lo33 <- loess(accel ~ times, data=mcycle, span = 0.35, degree = 2)
+Lo44 <- loess(accel ~ times, data=mcycle, span = 0.40, degree = 2)
+Lo55 <- loess(accel ~ times, data=mcycle, span = 0.45, degree = 2)
+Lo66 <- loess(accel ~ times, data=mcycle, span = 0.50, degree = 2)
+Lo77 <- loess(accel ~ times, data=mcycle, span = 0.55, degree = 2)
+Lo88 <- loess(accel ~ times, data=mcycle, span = 0.60, degree = 2)
+Lo99 <- loess(accel ~ times, data=mcycle, span = 0.65, degree = 2)
+Lo1010 <- loess(accel ~ times, data=mcycle, span = 0.70, degree = 2)
+Lo1111 <- loess(accel ~ times, data=mcycle, span = 0.75, degree = 2)
+
+# Table of Residual Standard Errors when degree=1
+de2 <- matrix(c(Lo11$s,Lo22$s,Lo33$s,Lo44$s,Lo55$s,Lo66$s,Lo77$s,Lo88$s,Lo99$s,Lo1010$s,Lo1111$s), ncol = 11, byrow=TRUE)
+colnames(d1) <- c("Span=0.25","Span=0.30","Span=0.35","Span=0.40","Span=0.45","Span=0.50","Span=0.55","Span=0.60","Span=0.65","Span=0.70","Span=0.75")
+rownames(d1) <- c("Residual Standard Error")
+de2
+
+# sort(de2)
+
+# Predict Loess of 3 "best" ones
+# get smooted output
+smootheddd30 <- predict(Lo22) 
+smootheddd35 <- predict(Lo33) 
+smootheddd25 <- predict(Lo11) 
+
+# Plot
+plot(mcycle$accel, x=mcycle$times, type="l", main="Loess Smoothing and Prediction", xlab="Times", ylab="Accel (Median)")
+lines(smootheddd30, x=mcycle$times, col="red")
+lines(smootheddd35, x=mcycle$times, col="green")
+lines(smootheddd25, x=mcycle$times, col="blue")
+```
+Looking at the table de2, we see that the Residual Standard Errors. According to de2, the 3 "best" loess variables are Lo22,Lo33,Lo11. Degree 1 and Degree 2 are very similar.
 
 
 
