@@ -113,17 +113,29 @@ d1
 
 # Predict Loess of 3 "best" ones
 # get smooted output
-smoothed65 <- predict(L9) 
+smoothed65 <- predict(L9)
 smoothed70 <- predict(L10) 
 smoothed75 <- predict(L11) 
 
 # Plot
-plot(ozone$ozone, x=ozone$temperature, type="l", main="Loess Smoothing and Prediction", xlab="Temperature", ylab="Ozone (Median)")
+plot(ozone$ozone, x=ozone$temperature, type="l", main="Loess Smoothing and Prediction, degree = 1", xlab="Temperature", ylab="Ozone (Median)")
 lines(smoothed65, x=ozone$temperature, col="red")
 lines(smoothed70, x=ozone$temperature, col="green")
 lines(smoothed75, x=ozone$temperature, col="blue")
 ```
 The graph is more accurate when the Residual Standard Error is lower. Looking at the table d1, we see that the Residual Standard Error decreases as span increases which makes sense since increasing the span is the smoothing parameter, and the larger the smoothing parameter is, the more accurate the graph becomes. Therefore the last 3 loess variables (L9,L10,L11) with the largest spans are the "best".
+
+
+TEST
+```{r}
+L1
+L1$s
+L1$residuals
+L1
+
+sigma(lm(ozone ~ temperature, data=ozone))
+```
+
 
 
 
@@ -154,7 +166,7 @@ smoothed30 <- predict(L22)
 smoothed35 <- predict(L33) 
 
 # Plot
-plot(ozone$ozone, x=ozone$temperature, type="l", main="Loess Smoothing and Prediction", xlab="Temperature", ylab="Ozone (Median)")
+plot(ozone$ozone, x=ozone$temperature, type="l", main="Loess Smoothing and Prediction, degree = 2", xlab="Temperature", ylab="Ozone (Median)")
 lines(smoothed25, x=ozone$temperature, col="red")
 lines(smoothed30, x=ozone$temperature, col="green")
 lines(smoothed35, x=ozone$temperature, col="blue")
@@ -203,7 +215,10 @@ smoothedd30 <- predict(Lo2)
 smoothedd35 <- predict(Lo3) 
 
 # Plot
-plot(mcycle$accel, x=mcycle$times, type="l", main="Loess Smoothing and Prediction", xlab="Times", ylab="Accel (Median)")
+plot(mcycle$accel, x=mcycle$times, type="l", main="Loess Smoothing and Prediction, degree = 1", xlab="Times", ylab="Accel (Median)")
+
+plot(mcycle$accel ~ mcycle$times, type="l", main="Loess Smoothing and Prediction, degree = 1", xlab="Times", ylab="Accel (Median)")
+
 lines(smoothedd25, x=mcycle$times, col="red")
 lines(smoothedd30, x=mcycle$times, col="green")
 lines(smoothedd35, x=mcycle$times, col="blue")
@@ -239,7 +254,7 @@ smootheddd35 <- predict(Lo33)
 smootheddd25 <- predict(Lo11) 
 
 # Plot
-plot(mcycle$accel, x=mcycle$times, type="l", main="Loess Smoothing and Prediction", xlab="Times", ylab="Accel (Median)")
+plot(mcycle$accel, x=mcycle$times, type="l", main="Loess Smoothing and Prediction, degree = 2", xlab="Times", ylab="Accel (Median)")
 lines(smootheddd30, x=mcycle$times, col="red")
 lines(smootheddd35, x=mcycle$times, col="green")
 lines(smootheddd25, x=mcycle$times, col="blue")
@@ -269,17 +284,50 @@ head(Auto_new)
 
 1. Randomly split your data into two data frames. Use 70% of your data for the training data and 30% for the testing data.
 ```{r}
-##Generate a random number that is 70% of the total number of rows in dataset.
+## Generate a random number that is 70% for the training data
 ran70 <- sample(1:nrow(Auto_new), 0.7 * nrow(Auto_new)) 
 
-##training dataset extracted
-#Auto_train <- Auto_nor[ran70,]
-
-##Generate a random number that is 30% of the total number of rows in dataset.
+## Generate a random number that is 30% for the testing data
 ran30 <- sample(1:nrow(Auto_new), 0.3 * nrow(Auto_new)) 
 
-##test dataset extracted
-#Auto_test <- Auto_nor[ran30,]
+## the normalization function is created
+nor <-function(x) { 
+  (x -min(x))/(max(x)-min(x))
+  }
+
+## Run nomalization on first 7 coulumns of dataset because they are the predictors
+Auto_norm <- as.data.frame(lapply(Auto_new[,c(1,2,3,4,5,6)], nor))
+
+summary(Auto_norm)
+
+## extract training set
+Auto_train <- Auto_norm[ran70,]
+
+## extract testing set
+Auto_test <- Auto_norm[ran30,]
+
+##extract 5th column of train dataset because it will be used as 'cl' argument in knn function.
+Auto_target_category <- Auto_new[ran70,5]
+
+##extract 5th column if test dataset to measure the accuracy
+Auto_test_category <- Auto_new[ran30,5]
+
+## load the package class
+library(class)
+## run knn function
+pr <- knn(Auto_train, Auto_test, cl=Auto_target_category, k=13)
+ 
+## create confusion matrix
+tab <- table(pr, Auto_test_category)
+
+## this function divides the correct predictions by total number of predictions that tell us how accurate teh model is.
+accuracy <- function(x){
+  sum(diag(x)/(sum(rowSums(x)))) * 100
+}
+
+## accuracy of Confusion Matrix
+accuracy(tab)
+
 ```
 
 2. Use your mykNN() function with your training and testing data for several values of k and record your accuracy.

@@ -164,8 +164,22 @@ wls <- lm(subset1$y~subset1$x, weights=weightArray)
 Reg_result <- wls$coefficients[2] * subset1$x + wls$coefficients[1] 
 Reg_result[1]
 
-#SSE - sum(actual - predicted^2)
-SSE <- sum((lm(subset1$y ~ subset1$x)$residuals^2))
+# ALL Regression functions values
+Reg_result_total <- c(20.59302, 107.1603, 139.7674, 174.263, 207.2334, 216.6616, 220.5445, 229.8607, 229.8347, 229.4301, 226.6045, 220.3904, 172.348, 163.8417, 161.849, 160.3351, 160.192, 161.0556, 227.34, 227.8985, 231.5586)
+length(Reg_result_total)
+
+# https://rpubs.com/Anil_2498/497822
+# Error Sum of Squares (Tells us how good of a fit we had) = sum(actual - predicted^2)
+SSE1 <- sum((lm(Reg_result_total ~ sample$x)$residuals^2))
+SSE1
+
+# Residual Standard Error
+fm <- lm(Reg_result_total ~ sample$x)
+sigma(fm)
+
+# Error Sum of Squares (Tells us how good of a fit we had) = sum(actual - predicted^2)
+SSE <- sum(resid(fm)^2)
+#SSE <- sum((lm(Reg_result_total ~ sample$x)$residuals^2))
 SSE
 
   
@@ -173,5 +187,8 @@ SSE
 # Slope * Point Of Estimation + Intercept
 
 Ltest <- loess(sample$y~sample$x, span = 1/3, degree=1)
+Ltest
+Ltest$n # total number of points
+Ltest$fitted # Regression Function Value
 
-
+ 

@@ -22,9 +22,26 @@ ozone
 # You should use geom_line() or similar to plot your final the LOESS curve.
 # Make sure you can access the objects properly using the $ notation.
 
+# STEPS OF LOESS fit/function
+# 1. determine the distance from each point to the point of estimation
+# 2. scale the distances by the maximum distance over all points in the local data set, and
+# 3. compute the weights by evaluating the tricube weight function using the scaled distances.
+
+# Tukey tri-cube weight function
+# if (abs(x) <= 1) {
+#   y = (1 - abs(x)^3)^3
+# } else if (abs(x) > 1){
+#   y = 0
+# }
+
+myloess(ozone$temperature,ozone$ozone,span = 0.5, degree = 1, show.plot = TRUE)
+
 myloess <- function(x, y, span = 0.5, degree = 1, show.plot = TRUE){
-  # x = x$ozone
-  # y = y$ozone
+  # x = temperature$ozone
+  # y = ozone$ozone
+  
+  # https://www.itl.nist.gov/div898/handbook/pmd/section1/dep/dep144.htm
+  # https://www.statsdirect.com/help/nonparametric_methods/loess.htm
   
   # total number of points in dataset
   N_total <- length(x)
@@ -32,32 +49,160 @@ myloess <- function(x, y, span = 0.5, degree = 1, show.plot = TRUE){
   # number of points in each window
   n_points <- N_total*span
   
-  # total number of windows (# of windows = # of Points of Estimation)
+  # total number of windows
   Win_total <- N_total
   
-  # STEPS OF LOESS fit/function
-  # 1. determine the distance from each point to the point of estimation
-  # 2. scale the distances by the maximum distance over all points in the local data set, and
-  # 3. compute the weights by evaluating the tricube weight function using the scaled distances.
+  # median of window size, used to calculate subsets
+  center <- ceiling(n_points/2)
   
-  # Tukey tri-cube weight function
-  # if (abs(x) <= 1) {
-  #   y = (1 - abs(x)^3)^3
-  # } else if (abs(x) > 1){
-  #   y = 0
-  # }
+  # Create empty vector for subset_x
+  subset_x <- vector(length = 55)
+  subset_x <-  c(x[1],x[n_points] )
   
-  # 
-  sse <- sum((fitted(lm(y ~ x)) - mean(y))^2)
+  # Create empty vector for subset_y
+  subset_y <- vector(length = 55)
+  subset_y <-  c(y[1],y[n_points] )
   
+  # Subset data before it reaches median (1:center)
+  for (i in 1:n_points){ 
+    subset_x[i] <- x[i] 
+    subset_y[i] <-y[i]
+  }
+  
+  # Create empty vector for scaledDistance1
+  scaledDistance1 <- vector(length = 55)
+  scaledDistance1 <-  c(scaledDistance1[1],scaledDistance1[n_points] )
+  
+  # Create empty vector for weight1
+  weight1 <- vector(length = 55)
+  weight1 <-  c(weight1[1],weight1[n_points] )
+  
+  # Max Distance (constant)
+  maxDistance1 <- abs(max(subset_x)-min(subset_x))
+  
+  for (j in 1:(center-1))
+  {
+    for (k in 1:n_points) # 1:points in window(55)
+    {
+      Distance1[k] <- subset_x[k]-subset_x[j]
+      scaledDistance1[k]<-Distance1[k]/maxDistance1
+      weight1[k] <- (1 - abs(scaledDistance1[k])^3)^3
+    }
+    # find the wls, outputs: intercept = $coefficients[1] and slope = $coefficients[2]
+    wls1 <- lm(subset_y~subset_x,weights=weight1)
+    
+    # Regression Function Value (Slope * Point of Estimation + Intercept)
+    Reg_result[j] <-wls1$coefficients[2] * subset_x[j] + wls1$coefficients[1]
+    
+    # ggplot 
+    # p + geom_line(x= subset_x[i], y=Reg_result[j])
+  }
+  
+  # when point of estimate stays in the middle of the local dataset
+  arrayCounter <- 1
+  
+  # Create empty vector for scaledDistance2
+  scaledDistance2 <- vector(length = 55)
+  scaledDistance2 <-  c(scaledDistance2[1],scaledDistance2[n_points] )
+  
+  # Create empty vector for weight2
+  weight2 <- vector(length = 55)
+  weight2 <-  c(weight2[1],weight2[n_points] )
+  
+  # Create empty vector for subset2_x
+  subset2_x <- vector(length = 55)
+  subset2_x <-  c(x[1],x[n_points] )
+  
+  # Create empty vector for subset2_y
+  subset2_y <- vector(length = 55)
+  subset2_y <-  c(y[1],y[n_points] )
+  
+  for (n in center:(N_total - center - 1)) # Points of Estimation
+  {
+    # create the data for local window (always changing until it hits )
+    for (m in (n - center -1):(n + center -1))
+    {
+      subset2_x[m] <- x[m] 
+      subset2_y[m] <- y[m]
+      maxDistance2 <- abs(max(subset2_x) - min(subset2_x)) # MaxDistance changes
+      Distance2[arrayCounter] <- subset2_x[m]-subset2_x[n]
+      scaledDistance2[arrayCounter]<-Distance2[arrayCounter]/maxDistance2
+      weight2[arrayCounter] <- (1 - abs(scaledDistance2[arrayCounter])^3)^3
+      arrayCounter <- arrayCounter + 1
+    }
+    # find the wls, outputs: intercept = $coefficients[1] and slope = $coefficients[2]
+    wls2 <- lm(subset2_y2~subset2_x,weights=weight2)
+    
+    # Regression Function Value (Slope * Point of Estimation + Intercept)
+    Reg_result[n] <-wls2$coefficients[2] * subset2_x[n] + wls2$coefficients[1]
+  }
+  # Graph
+  # You need to use print() in order to use ggplot inside a for loop
+  # using geomline? To create a local linear regression fit
+  # p + geom_line(x= subset2_x[m], y=Reg_result[n]))
+  
+  
+  arrayCounter1 <- 1
+  
+  # Create empty vector for scaledDistance3
+  scaledDistance3 <- vector(length = 55)
+  scaledDistance3 <-  c(scaledDistance3[1],scaledDistance3[n_points] )
+  
+  # Create empty vector for weight3
+  weight3 <- vector(length = 55)
+  weight3 <-  c(weight3[1],weight3[n_points] )
+  
+  # Create empty vector for subset3_x
+  subset3_x <- vector(length = 55)
+  subset3_x <-  c(x[1],x[n_points] )
+  
+  # Create empty vector for subset3_y
+  subset3_y <- vector(length = 55)
+  subset3_y <-  c(y[1],y[n_points] )
+  
+  # Subset data before it reaches median (1:center)
+  for (ii in (N_total - n_points):N_total){ 
+    subset3_x[ii] <- x[ii] 
+    subset3_y[ii] <-y[ii]
+  }
+  maxDistance3 <- abs(max(subset3_x)-min(subset3_x)) # Max Distance (constant)
+  for (jj in (N_total - center):N_total)
+  {
+    for (kk in (N_total - center):N_total)
+    {
+      Distance3[arrayCounter1] <- subset3_x[kk]-subset3_x[jj]
+      scaledDistance3[arrayCounter1] <- Distance3[arrayCounter1]/maxDistance3
+      weight3[arrayCounter1] <- (1 - abs(scaledDistance3[arrayCounter1])^3)^3
+      arrayCounter1 <- arrayCounter1 + 1
+    }
+    # find the wls, outputs: intercept = $coefficients[1] and slope = $coefficients[2]
+    wls3 <- lm(subset3_y~subset3_x,weights=weight3)
+    # Regression Function Value (Slope * Point of Estimation + Intercept)
+    Reg_result[jj] <-wls3$coefficients[2] * subset3_x[jj] + wls3$coefficients[1]
+  }
+  
+  # Graph
+  # You need to use print() in order to use ggplot inside a for loop
+  # using geomline? To create a local linear regression fit
+  #p + geom_line(x= subset3_x[ii], y=Reg_result[jj]))
+  
+  # https://rpubs.com/Anil_2498/497822
   # Error Sum of Squares (Tells us how good of a fit we had) = sum(actual - predicted^2)
-  SSE <- sum((lm(y ~ x)$residuals^2))
-
-  # An object containing the ggplot so that we can see the plot later
-  loessplot <- ggplot
+  SSE <- sum((lm( Reg_result ~ x)$residuals^2))
+  # SSE <- sum(resid(lm(Reg_result ~ x))^2) gets the same answer
+  
+  # Residual Standard Error (RSE)
+  RSE <- sigma(lm(Reg_result ~ x))
+  
+  # basic plot with original x and y from the dataset
+  loessplot <- plot(y ~ x, type="l", main="Loess Smoothing and Prediction, degree = 1")
+  lines(predict(RSE), x)
   
   return(span, degree, N_total, Win_total, n_points, SSE, loessplot)
 }
+
+
+
 
 
 # STEPS OF LOESS fit/function
@@ -93,7 +238,7 @@ myloess <- function(x, y, span = 0.5, degree = 1, show.plot = TRUE){
 library(caret)
 
 mykNN <- function(train, test, cl, k = 3) {
-
+  
   
   # In-Sample Confusion Matrix
   # Lecture 16, pg 78
@@ -109,14 +254,19 @@ mykNN <- function(train, test, cl, k = 3) {
   # Make sure the levels of pred matches the levels of Default$default
   # or else you need to relevel
 
+  # accuracy of kNN's prediction
+  accuracy <- mean(knn_pred == actual_test)
+  # accuracy <- 1 - err
+  
+  
   # Average Misclassification Rate/ error rate
-  err <- mean((as.numeric(Default_train$default)-1) != (pihat_train > 0.5))
+  # mean(knn_pred != actual_test)
+  err <- 1 - accuracy 
   # outputs a decimal number ex. 0.028
   
-  # accuracy
-  accuracy <- 1 - err
+
   
-  return (confusionMatrix)
+  return (pred, accuracy, err, confusionMatrix, k)
   #return(list of objects seen below)
 }
 
