@@ -35,9 +35,6 @@ ozone
 # }
 
 myloess <- function(x, y, span = 0.5, degree = 1, show.plot = TRUE){
-  # x = temperature$ozone
-  # y = ozone$ozone
-  
   # https://www.itl.nist.gov/div898/handbook/pmd/section1/dep/dep144.htm
   # https://www.statsdirect.com/help/nonparametric_methods/loess.htm
   
@@ -45,7 +42,7 @@ myloess <- function(x, y, span = 0.5, degree = 1, show.plot = TRUE){
   N_total <- length(x)
   
   # number of points in each window
-  n_points <- N_total*span
+  n_points <- floor(N_total*span)
   
   # total number of windows
   Win_total <- N_total

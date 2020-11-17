@@ -82,13 +82,83 @@ First consider the ozone dataset, see Canvas for the ozone.RData file.
 
 1. Fit polynomials of different degrees between 1 and 6 with ozone being regressed upon temperature. Which polynomial fit appears to work the best?
 ```{r}
-
+degree1 <- loess(ozone ~ temperature, data=ozone, span = 0.5, degree = 1)
+degree2 <- loess(ozone ~ temperature, data=ozone, span = 0.5, degree = 2)
+#degree3 <- loess(ozone ~ temperature, data=ozone, span = 0.5, degree = 3)
+#degree4 <- loess(ozone ~ temperature, data=ozone, span = 0.5, degree = 4)
+#degree5 <- loess(ozone ~ temperature, data=ozone, span = 0.5, degree = 5)
+#degree6 <- loess(ozone ~ temperature, data=ozone, span = 0.5, degree = 6)
 ```
+It seems that degrees 1 and 2 are the best polynomials fits as changing the degree to 3,4,5, and 6 seems to create an error where the 'degree' must be 0, 1 or 2. 
+This is makes sense because a low-degree polynomial (1 and 2) generally have better polynomial weight fits
+
 
 2. Use your function to determine LOESS regression fits on the data. Use span = 0.25 to 0.75 with steps of 0.05. Do this for both degree = 1 and degree = 2. List all of the results in a table. Plot the three “best” degree = 1 and three “best” degree = 2 fits that you determined, make sure to put the appropriate span in the title for each plot (there should be a total of 6 plots). You determined the “best” by comparing the residual standard errors. However if you visually inspect the best compared to the 2nd and 3rd best fits, do you feel that you may have over-fit the data?
-```{r}
 
+We had errors when trying to run our function.
+"Error in model.frame.default(formula = subset2_y ~ subset2_x, weights = weight2,  : 
+  variable lengths differ (found for '(weights)')"
+  
+However, we have included a LOESS_Example.R file in which we were able to replicate the table
+and graph from the website we were supposed to use as an example.
+https://www.itl.nist.gov/div898/handbook/pmd/section1/dep/dep144.htm
+
+After that we created the Lee_Li_project1.R file with our function which return the error listed above. Hopefully, we would like to get partial credit for our work from the LOESS_Example.R and Lee_Li_project1 comments and logic. We would also love to get valuable input on what our mistakes could have been from our my_loess function (Lee_Li_project.R).
+
+Here are some of the return values from the function my_loess
+```{r}
+  # total number of points in dataset
+  N_total <- length(ozone$temperature)
+  N_total
+
+  # number of points in each window
+  span = 0.5 # given
+  n_points <- floor(N_total*span)
+  n_points
+  
+  # total number of windows
+  Win_total <- N_total
+  Win_total
+  
+  # median of window size, used to calculate subsets
+  center <- ceiling(n_points/2)
+  center
+  
+  # We then create a subset for each of the with size = n_points = 55
+  # Then we create the Point of Estimations 
+  
+  # FOR each of the windows (Subset 1 for the following)
+  # Distance [1:55] = Each point in the subset - Point of Estimation for that window
+  
+  # We create a distance array [Distance1:Distance55]
+  # distanceArray <- c(Distance1,Distance2,Distance3,Distance4,Distance5,Distance6,Distance7, ...)
+  
+  # We calculate the max distance by finding difference between the max and min x points in the window
+  # maxDistance <- abs(max(subset1$x)-min(subset1$x))
+  
+  # We find the scaled distance array by dividing the max distance constant from the distance array with 55 points in order to find u for the Tukey Tri-Weight Function
+  # scaledDistanceArray <- distanceArray/maxDistance
+  
+  # We find the weightedArray using the Tri-Weight Function
+  # weightArray <- (1 - abs(scaledDistanceArray)^3)^3
+  
+  # Then use the Local Parameter Estimates
+  # wls <- lm(subset1$y~subset1$x, weights=weightArray)
+  
+  # We finally get the Regression Function Value (y=mx+b)
+  # Slope * Point Of Estimation + Intercept
+  # Reg_result <- wls$coefficients[2] * subset1$x + wls$coefficients[1] 
+  
+  # Error Sum of Squares (Tells us how good of a fit we had) = sum(actual - predicted^2)
+  # SSE <- sum((lm( Reg_result ~ x)$residuals^2))
+  
+  # Create a plot
+  loessplot <- plot(ozone$ozone, x=ozone$temperature, type="l", main="Loess Smoothing and Prediction, degree = 1", xlab="Temperature", ylab="Ozone (Median)")
+# lines(smooth, x=ozone$temperature, col="red")
+  loessplot
 ```
+
+
 
 3. Be sure to compare your results with that found from the built-in loess() function and your plots with that which is obtained from ggplot() + geom_smooth()/stat_smooth().
 ```{r}
@@ -124,17 +194,6 @@ lines(smoothed70, x=ozone$temperature, col="green")
 lines(smoothed75, x=ozone$temperature, col="blue")
 ```
 The graph is more accurate when the Residual Standard Error is lower. Looking at the table d1, we see that the Residual Standard Error decreases as span increases which makes sense since increasing the span is the smoothing parameter, and the larger the smoothing parameter is, the more accurate the graph becomes. Therefore the last 3 loess variables (L9,L10,L11) with the largest spans are the "best".
-
-
-TEST
-```{r}
-L1
-L1$s
-L1$residuals
-L1
-
-sigma(lm(ozone ~ temperature, data=ozone))
-```
 
 
 
@@ -183,9 +242,61 @@ ggplot(mcycle, aes(x = times, y = accel)) + theme_bw() + geom_point()
 ```
 
 1. This dataset is notoriously difficult to fit with polynomial regression. Later we will study how to use regression trees to fit this data. Until then, determine the three “best” degree = 1 and three “best” degree = 2 LOESS regression fits by finding the best span between 0.25 and 0.75 with steps of 0.05 for each degree. Report your answers in a table. Plot the three best first for both degree = 1 and degree = 2. Based upon a visual inspection, which models provide the “best” fit?
-```{r}
 
+Same problem as Problem 1
+Here are some of the return values from the function my_loess
+```{r}
+  # total number of points in dataset
+  N_total <- length(mcycle$times)
+  N_total
+
+  # number of points in each window
+  span = 0.5 # given
+  n_points <- floor(N_total*span)
+  n_points
+  
+  # total number of windows
+  Win_total <- N_total
+  Win_total
+  
+  # median of window size, used to calculate subsets
+  center <- ceiling(n_points/2)
+  center
+  
+  # We then create a subset for each of the with size = n_points = 55
+  # Then we create the Point of Estimations 
+  
+  # FOR each of the windows (Subset 1 for the following)
+  # Distance [1:55] = Each point in the subset - Point of Estimation for that window
+  
+  # We create a distance array [Distance1:Distance55]
+  # distanceArray <- c(Distance1,Distance2,Distance3,Distance4,Distance5,Distance6,Distance7, ...)
+  
+  # We calculate the max distance by finding difference between the max and min x points in the window
+  # maxDistance <- abs(max(subset1$x)-min(subset1$x))
+  
+  # We find the scaled distance array by dividing the max distance constant from the distance array with 55 points in order to find u for the Tukey Tri-Weight Function
+  # scaledDistanceArray <- distanceArray/maxDistance
+  
+  # We find the weightedArray using the Tri-Weight Function
+  # weightArray <- (1 - abs(scaledDistanceArray)^3)^3
+  
+  # Then use the Local Parameter Estimates
+  # wls <- lm(subset1$y~subset1$x, weights=weightArray)
+  
+  # We finally get the Regression Function Value (y=mx+b)
+  # Slope * Point Of Estimation + Intercept
+  # Reg_result <- wls$coefficients[2] * subset1$x + wls$coefficients[1] 
+  
+  # Error Sum of Squares (Tells us how good of a fit we had) = sum(actual - predicted^2)
+  # SSE <- sum((lm( Reg_result ~ x)$residuals^2))
+  
+  # Create a plot
+  loessplot2 <- plot(mcycle$accel, x=mcycle$times, type="l", main="Loess Smoothing and Prediction, degree = 1", xlab="Times", ylab="Accel (Median)")
+# lines(smooth, x=mcycle$times, col="red")
+  loessplot2
 ```
+
 
 2. Be sure to compare your results with that found from the built-in loess() function and your plots with that which is obtained from ggplot() + geom_smooth()/stat_smooth().
 ```{r}
