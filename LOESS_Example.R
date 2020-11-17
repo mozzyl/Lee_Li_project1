@@ -26,30 +26,30 @@ Win_total <- N_total
 Win_total
 
 
-# Subset data to match table
-for (i in 1:n_points){
-  subset <- as.data.frame(sample[i,])
-}
+# # Subset data to match table
+# for (i in 1:n_points){
+#   subset <- as.data.frame(sample[i,])
+# }
+# 
+# # Point of Estimation For-Loop
+# for (i in 1:N_total){
+#   PointOfEstimation = x[i]
+# }
+# 
+# PointOfEstimation[i] <- x[i]
+# Distance[i] <- x[i+(n_points-(n_points))] - PointOfEstimation[i]
+# Distance[i+1] <- x[i+(n_points-(n_points-1))]  - PointOfEstimation[i]
+# Distance[i+2] <- x[i+(n_points-(n_points-2))] - PointOfEstimation[i]
+# Distance[i+3] <- x[i+(n_points-(n_points-3))] - PointOfEstimation[i]
+# Distance[i+4] <- x[i+(n_points-(n_points-4))] - PointOfEstimation[i]
+# Distance[i+5] <- x[i+(n_points-(n_points-5))] - PointOfEstimation[i]
+# Distance[i+6] <- x[i+(n_points-(n_points-6))] - PointOfEstimation[i]
 
-# Point of Estimation For-Loop
-for (i in 1:N_total){
-  PointOfEstimation = x[i]
-}
-
-PointOfEstimation[i] <- x[i]
-Distance[i] <- x[i+(n_points-(n_points))] - PointOfEstimation[i]
-Distance[i+1] <- x[i+(n_points-(n_points-1))]  - PointOfEstimation[i]
-Distance[i+2] <- x[i+(n_points-(n_points-2))] - PointOfEstimation[i]
-Distance[i+3] <- x[i+(n_points-(n_points-3))] - PointOfEstimation[i]
-Distance[i+4] <- x[i+(n_points-(n_points-4))] - PointOfEstimation[i]
-Distance[i+5] <- x[i+(n_points-(n_points-5))] - PointOfEstimation[i]
-Distance[i+6] <- x[i+(n_points-(n_points-6))] - PointOfEstimation[i]
-
-distanceArray <- c(Distance1,Distance2,Distance3,Distance4,Distance5,Distance6,Distance7)
-
-maxDistance <- abs(max(subset1$x)-min(subset1$x))
-scaledDistanceArray <- distanceArray/maxDistance
-weightArray <- (1 - abs(scaledDistanceArray)^3)^3
+## Key points
+#distanceArray <- c(Distance1,Distance2,Distance3,Distance4,Distance5,Distance6,Distance7)
+#maxDistance <- abs(max(subset1$x)-min(subset1$x))
+#scaledDistanceArray <- distanceArray/maxDistance
+#weightArray <- (1 - abs(scaledDistanceArray)^3)^3
 
 
 
@@ -112,7 +112,7 @@ Distance4
 Distance5
 Distance6
 Distance7
-Distance <- subset1$x[i+6] - PointOfEstimation[i]
+# Distance <- subset1$x[i+6] - PointOfEstimation[i]
 distanceArray <- c(Distance1,Distance2,Distance3,Distance4,Distance5,Distance6,Distance7)
 distanceArray
 
@@ -160,10 +160,18 @@ weightArray <- (1 - abs(scaledDistanceArray)^3)^3
 weightArray
 
 # Local Parameter Estimates
-lm(weightArray~distanceArray)
+wls <- lm(subset1$y~subset1$x, weights=weightArray)
+Reg_result <- wls$coefficients[2] * subset1$x + wls$coefficients[1] 
+Reg_result[1]
 
+#SSE - sum(actual - predicted^2)
+SSE <- sum((lm(subset1$y ~ subset1$x)$residuals^2))
+SSE
+
+  
 # Regression Function Value (y=mx+b)
 # Slope * Point Of Estimation + Intercept
 
+Ltest <- loess(sample$y~sample$x, span = 1/3, degree=1)
 
 

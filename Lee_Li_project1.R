@@ -26,52 +26,35 @@ myloess <- function(x, y, span = 0.5, degree = 1, show.plot = TRUE){
   # x = x$ozone
   # y = y$ozone
   
-  
   # total number of points in dataset
   N_total <- length(x)
-  #N_total <- nrow(x)*ncol(x)
   
   # number of points in each window
   n_points <- N_total*span
   
-  # total number of windows
-  Win_total <- N_total/n_points
-  
-  # So, we know that x and y are just two different columns of the dataset
-  # If we look at one of the links, there is an example with loess using a data set with x and y
-  # The steps they use for the LOESS function is below
-  # I think we have to use Step 1 and 2 to change x into u (on the instruction pdf) which will be used
-  # in the Tukey tri-cube weight function below?
-  # I'm not sure, it's what I got from reading the external links references from the instructions.
+  # total number of windows (# of windows = # of Points of Estimation)
+  Win_total <- N_total
   
   # STEPS OF LOESS fit/function
   # 1. determine the distance from each point to the point of estimation
   # 2. scale the distances by the maximum distance over all points in the local data set, and
   # 3. compute the weights by evaluating the tricube weight function using the scaled distances.
   
-  
   # Tukey tri-cube weight function
-  if (abs(x) <= 1) {
-    y = (1 - abs(x)^3)^3
-  } else if (abs(x) > 1){
-    y = 0
-  }
+  # if (abs(x) <= 1) {
+  #   y = (1 - abs(x)^3)^3
+  # } else if (abs(x) > 1){
+  #   y = 0
+  # }
   
-  # Error Sum of Squares (Tells us how good of a fit we had).
+  # 
   sse <- sum((fitted(lm(y ~ x)) - mean(y))^2)
+  
+  # Error Sum of Squares (Tells us how good of a fit we had) = sum(actual - predicted^2)
+  SSE <- sum((lm(y ~ x)$residuals^2))
 
   # An object containing the ggplot so that we can see the plot later
   loessplot <- ggplot
-    
-    
-    
-  # if (abs(x) <= 1) {
-  #   y = (1 - abs(x)^3)^3
-  # }
-  # else
-  #   y = 0
-  
-  
   
   return(span, degree, N_total, Win_total, n_points, SSE, loessplot)
 }
@@ -149,7 +132,7 @@ mykNN <- function(train, test, cl, k = 3) {
 
 # REFERENCES:
 # https://rinterested.github.io/statistics/rsquare.html
-
+# https://rpubs.com/Anil_2498/497822
 
 
 
