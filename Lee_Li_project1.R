@@ -241,31 +241,43 @@ library(caret)
 
 mykNN <- function(train, test, cl, k = 3) {
   
+  train <- data[train,]
+  test <- data[test,]
   
-  # In-Sample Confusion Matrix
-  # Lecture 16, pg 78
-  pihat_train <- predict(modfit_best, newdata = Default_train, type = "response")
-  threshold <- 0.5 # We pick the threshold 0.5 = 50%
-  predicted_cat_test <- factor( ifelse(pihat_test > threshold,
-                                       "Yes",  # Success
-                                       "No") ) # Failure
-  # Lecture 16 video 4, 1st slide
-  # We can make a table (acutal, predicted categories)
+  # cl - factor of true classification of training set
+  trainCl <- factor(data[train,'classifications'])
+  testCl <- factor(data[test,'classifications'])
   
+  # knnPred
+  knn <- 
+  
+  Knn_pred <-
+  acutal_test <-
+    
+  # Confusion Matrix
+  tab <- table(knn_pred, testCl)
+  
+  ## the normalization function is created (Euclidean distance)
+  norm <-function(x) { 
+    (x -min(x))/(max(x)-min(x))
+  }
+  
+  accuracy <- function(x){
+    sum(diag(x)/(sum(rowSums(x)))) * 100
+  }
   
   # Make sure the levels of pred matches the levels of Default$default
   # or else you need to relevel
-
+  
   # accuracy of kNN's prediction
   accuracy <- mean(knn_pred == actual_test)
-  # accuracy <- 1 - err
   
   # Average Misclassification Rate/ error rate
   # mean(knn_pred != actual_test)
   err <- 1 - accuracy 
   # outputs a decimal number ex. 0.028
   
-  return (pred, accuracy, err, confusionMatrix, k)
+  return (knn_pred, accuracy, err, confusionMatrix, k)
   #return(list of objects seen below)
 }
 
@@ -282,6 +294,7 @@ mykNN <- function(train, test, cl, k = 3) {
 # REFERENCES:
 # https://rinterested.github.io/statistics/rsquare.html
 # https://rpubs.com/Anil_2498/497822
+
 
 
 

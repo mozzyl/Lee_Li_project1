@@ -394,6 +394,8 @@ head(Auto_new)
 ```
 
 1. Randomly split your data into two data frames. Use 70% of your data for the training data and 30% for the testing data.
+
+Using the example the links provided
 ```{r}
 ## Generate a random number that is 70% for the training data
 ran70 <- sample(1:nrow(Auto_new), 0.7 * nrow(Auto_new)) 
@@ -433,32 +435,35 @@ tab <- table(pr, Auto_test_category)
 
 ## this function divides the correct predictions by total number of predictions that tell us how accurate the model is.
 accuracy <- function(x){
-  sum(diag(x)/(sum(rowSums(x)))) * 100
+  sum(diag(x)/(sum(rowSums(x))))
 }
 
 ## accuracy of Confusion Matrix
 accuracy(tab)
-
 ```
+
+
+We commented the myKNN function to the best of our ability.
 
 2. Use your mykNN() function with your training and testing data for several values of k and record your accuracy.
 ```{r}
-
+# 
 ```
 
 3. Make a table of the accuracy for different values of k. Display this table nicely using a table maker like kable().
 ```{r}
-
+#
 ```
 
 4. Make a plot of the accuracy versus k to determine the best number of neighbors to use.
 ```{r}
-
+#k = 3
+#plot(tab ~ k)
 ```
 
 5. Show the final confusion matrix for the best value of k and make sure the accuracy is stated.
 ```{r}
-
+# table(knn_pred, actual_test)
 ```
 
 
