@@ -320,7 +320,7 @@ pr <- knn(Auto_train, Auto_test, cl=Auto_target_category, k=13)
 ## create confusion matrix
 tab <- table(pr, Auto_test_category)
 
-## this function divides the correct predictions by total number of predictions that tell us how accurate teh model is.
+## this function divides the correct predictions by total number of predictions that tell us how accurate the model is.
 accuracy <- function(x){
   sum(diag(x)/(sum(rowSums(x)))) * 100
 }

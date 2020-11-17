@@ -34,8 +34,6 @@ ozone
 #   y = 0
 # }
 
-myloess(ozone$temperature,ozone$ozone,span = 0.5, degree = 1, show.plot = TRUE)
-
 myloess <- function(x, y, span = 0.5, degree = 1, show.plot = TRUE){
   # x = temperature$ozone
   # y = ozone$ozone
@@ -55,12 +53,13 @@ myloess <- function(x, y, span = 0.5, degree = 1, show.plot = TRUE){
   # median of window size, used to calculate subsets
   center <- ceiling(n_points/2)
   
+  # create an empty vector for the regression result
+  Reg_result <- vector(length = N_total)
+  
   # Create empty vector for subset_x
-  subset_x <- vector(length = 55)
   subset_x <-  c(x[1],x[n_points] )
   
   # Create empty vector for subset_y
-  subset_y <- vector(length = 55)
   subset_y <-  c(y[1],y[n_points] )
   
   # Subset data before it reaches median (1:center)
@@ -69,13 +68,14 @@ myloess <- function(x, y, span = 0.5, degree = 1, show.plot = TRUE){
     subset_y[i] <-y[i]
   }
   
+  # Create empty vector for Distance1
+  Distance1 <-  vector(length = n_points)  
+  
   # Create empty vector for scaledDistance1
-  scaledDistance1 <- vector(length = 55)
-  scaledDistance1 <-  c(scaledDistance1[1],scaledDistance1[n_points] )
+  scaledDistance1 <-  vector(length = n_points)
   
   # Create empty vector for weight1
-  weight1 <- vector(length = 55)
-  weight1 <-  c(weight1[1],weight1[n_points] )
+  weight1 <-  vector(length = n_points)
   
   # Max Distance (constant)
   maxDistance1 <- abs(max(subset_x)-min(subset_x))
@@ -98,40 +98,39 @@ myloess <- function(x, y, span = 0.5, degree = 1, show.plot = TRUE){
     # p + geom_line(x= subset_x[i], y=Reg_result[j])
   }
   
-  # when point of estimate stays in the middle of the local dataset
-  arrayCounter <- 1
-  
-  # Create empty vector for scaledDistance2
-  scaledDistance2 <- vector(length = 55)
-  scaledDistance2 <-  c(scaledDistance2[1],scaledDistance2[n_points] )
-  
-  # Create empty vector for weight2
-  weight2 <- vector(length = 55)
-  weight2 <-  c(weight2[1],weight2[n_points] )
-  
-  # Create empty vector for subset2_x
-  subset2_x <- vector(length = 55)
-  subset2_x <-  c(x[1],x[n_points] )
-  
-  # Create empty vector for subset2_y
-  subset2_y <- vector(length = 55)
-  subset2_y <-  c(y[1],y[n_points] )
-  
-  for (n in center:(N_total - center - 1)) # Points of Estimation
+  for (n in center:(N_total - center + 1)) # Points of Estimation
   {
+    # when point of estimate stays in the middle of the local dataset
+    arrayCounter <- 1
+    
+    # Create empty vector for subset2_x
+    subset2_x <-  c(x[n - center +1],x[n + center -1])
+    
+    # Create empty vector for subset2_y
+    subset2_y <-  c(y[n - center +1],y[n + center -1])
+    
+    # Create empty vector for Distance2
+    Distance2 <-  vector(length = n_points)  
+    
+    # Create empty vector for scaledDistance2
+    scaledDistance2 <-  vector(length = n_points)
+    
+    # Create empty vector for weight2
+    weight2 <-  vector(length = n_points)
+    
+    # MaxDistance changes
+    maxDistance2 <- abs(max(subset2_x) - min(subset2_x)) 
+    
     # create the data for local window (always changing until it hits )
-    for (m in (n - center -1):(n + center -1))
+    for (m in (n - center +1):(n + center -1))
     {
-      subset2_x[m] <- x[m] 
-      subset2_y[m] <- y[m]
-      maxDistance2 <- abs(max(subset2_x) - min(subset2_x)) # MaxDistance changes
       Distance2[arrayCounter] <- subset2_x[m]-subset2_x[n]
       scaledDistance2[arrayCounter]<-Distance2[arrayCounter]/maxDistance2
       weight2[arrayCounter] <- (1 - abs(scaledDistance2[arrayCounter])^3)^3
       arrayCounter <- arrayCounter + 1
     }
     # find the wls, outputs: intercept = $coefficients[1] and slope = $coefficients[2]
-    wls2 <- lm(subset2_y2~subset2_x,weights=weight2)
+    wls2 <- lm(subset2_y~subset2_x,weights=weight2)
     
     # Regression Function Value (Slope * Point of Estimation + Intercept)
     Reg_result[n] <-wls2$coefficients[2] * subset2_x[n] + wls2$coefficients[1]
@@ -144,20 +143,19 @@ myloess <- function(x, y, span = 0.5, degree = 1, show.plot = TRUE){
   
   arrayCounter1 <- 1
   
+  # Create empty vector for Distance3
+  Distance3 <-  vector(length = n_points)  
+  
   # Create empty vector for scaledDistance3
-  scaledDistance3 <- vector(length = 55)
-  scaledDistance3 <-  c(scaledDistance3[1],scaledDistance3[n_points] )
+  scaledDistance3 <-  vector(length = n_points)
   
   # Create empty vector for weight3
-  weight3 <- vector(length = 55)
-  weight3 <-  c(weight3[1],weight3[n_points] )
+  weight3 <-  vector(length = n_points)
   
   # Create empty vector for subset3_x
-  subset3_x <- vector(length = 55)
   subset3_x <-  c(x[1],x[n_points] )
   
   # Create empty vector for subset3_y
-  subset3_y <- vector(length = 55)
   subset3_y <-  c(y[1],y[n_points] )
   
   # Subset data before it reaches median (1:center)
@@ -177,6 +175,7 @@ myloess <- function(x, y, span = 0.5, degree = 1, show.plot = TRUE){
     }
     # find the wls, outputs: intercept = $coefficients[1] and slope = $coefficients[2]
     wls3 <- lm(subset3_y~subset3_x,weights=weight3)
+    
     # Regression Function Value (Slope * Point of Estimation + Intercept)
     Reg_result[jj] <-wls3$coefficients[2] * subset3_x[jj] + wls3$coefficients[1]
   }
@@ -192,15 +191,21 @@ myloess <- function(x, y, span = 0.5, degree = 1, show.plot = TRUE){
   # SSE <- sum(resid(lm(Reg_result ~ x))^2) gets the same answer
   
   # Residual Standard Error (RSE)
-  RSE <- sigma(lm(Reg_result ~ x))
+  RSE <- sigma(lm(Reg_result ~ y))
+  
+  # get smoothed output
+  smoothed <- predict(Reg_result) 
   
   # basic plot with original x and y from the dataset
   loessplot <- plot(y ~ x, type="l", main="Loess Smoothing and Prediction, degree = 1")
-  lines(predict(RSE), x)
+  lines(smoothed, x)
+  
   
   return(span, degree, N_total, Win_total, n_points, SSE, loessplot)
 }
 
+
+myloess(ozone$temperature, ozone$ozone, span = 0.5, degree = 1, show.plot = TRUE)
 
 
 
@@ -258,13 +263,10 @@ mykNN <- function(train, test, cl, k = 3) {
   accuracy <- mean(knn_pred == actual_test)
   # accuracy <- 1 - err
   
-  
   # Average Misclassification Rate/ error rate
   # mean(knn_pred != actual_test)
   err <- 1 - accuracy 
   # outputs a decimal number ex. 0.028
-  
-
   
   return (pred, accuracy, err, confusionMatrix, k)
   #return(list of objects seen below)
